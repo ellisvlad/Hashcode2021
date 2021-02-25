@@ -4,6 +4,7 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.util.ArrayDeque;
 import java.util.ArrayList;
+import java.util.Deque;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
@@ -26,9 +27,9 @@ public class InputParser {
     public int cars;
     public int bonus;
 
-    public Intersection[] nodeData;
+    public List<Intersection> nodeData;
     public Map<String, Street> streetData;
-    public Car[] carData;
+    public List<Car> carData;
 
     public InputParser(BufferedReader is) {
         this.is = is;
@@ -44,9 +45,9 @@ public class InputParser {
         cars = Integer.parseInt(lineOne.group(4));
         bonus = Integer.parseInt(lineOne.group(5));
 
-        nodeData = new Intersection[intersections];
+        nodeData = new ArrayList<>(intersections);
         for (int i=0; i<intersections; i++) {
-            nodeData[i] = new Intersection(i);
+            nodeData.add(new Intersection(i));
         }
 
         streetData = new HashMap<>();
@@ -59,21 +60,21 @@ public class InputParser {
             String streetName = streetMatch.group(3);
             int length = Integer.parseInt(streetMatch.group(4));
 
-            Street street = new Street(streetName, nodeData[startNode], nodeData[endNode], length);
+            Street street = new Street(streetName, nodeData.get(startNode), nodeData.get(endNode), length);
             streetData.put(streetName, street);
-            nodeData[startNode].outgoingStreets.add(street);
+            nodeData.get(startNode).outgoingStreets.add(street);
         }
 
-        carData = new Car[cars];
+        carData = new ArrayList<>(cars);
         for (int i=0; i<cars; i++) {
             String[] parts = is.readLine().split(" ");
 
-            Queue<Street> streetsPath = new ArrayDeque<>(Integer.parseInt(parts[0]));
+            Deque<Street> streetsPath = new ArrayDeque<>(Integer.parseInt(parts[0]));
             for (int j = 1; j != parts.length; j++) {
                 streetsPath.add(streetData.get(parts[j]));
             }
 
-            carData[i] = new Car(streetsPath, streetsPath.peek().startNode);
+            carData.add(new Car(streetsPath, streetsPath.peek().startNode, streetsPath.peek()));
         }
     }
 

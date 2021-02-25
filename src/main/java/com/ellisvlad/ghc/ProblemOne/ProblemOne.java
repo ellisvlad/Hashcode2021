@@ -35,7 +35,11 @@ public class ProblemOne {
     public ProblemOne(BufferedReader is) throws IOException {
         InputParser parser = new InputParser(is);
         parser.parse();
+        ReactiveMethod r = new ReactiveMethod(parser);
+        ResultWriter.WriteResults(r.compute(), null);
         System.out.println("Done");
     }
+
+
 
 }
